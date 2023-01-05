@@ -1,6 +1,7 @@
 import numpy as np
 import heapq
 import random
+import time
 from State import State
 
 
@@ -69,11 +70,26 @@ class Puzzle:
         return self.states_pq[0].getIndexOfTile(0)
 
     def solve(self):
+        start = time.time()
         while not self.check_if_solved((self.states_pq[0])[2]):
             self.where_to_go()
+        end = time.time()
         print("Solved")
         print("Depth: " + str(self.g_val))
         print("Number of States: " + str(self.num_of_states))
+        f = open("output.txt", "a")
+        # f.write("")
+        # f.write("Depth: "+str(self.g_val))
+        # f.write("Number of States: " + str(self.num_of_states))
+        # f.write("Time it took: " + str(end-start) + " seconds")
+        # f.write("")
+        f.write("\n"
+                "Depth: "+str(self.g_val) +
+                "\nNumber of States: " + str(self.num_of_states) +
+                "\nTime it took: " + str(round(end-start, 2)) + " seconds"
+                "\n")
+        f.close()
+        return round(end-start, 2)
 
     def where_to_go(self):
         out = heapq.heappop(self.states_pq)
