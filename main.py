@@ -3,14 +3,21 @@ from Puzzle import Puzzle
 
 
 def hamming(runs):
-
+    """
+    Starts the puzzle solving algorithm using the hamming heuristic.
+    Also makes a file called output and writes the number of runs as well as 
+    the total time needed.
+   
+    :param runs: Number of runs the system should do
+    :return: None
+    """
     time = 0
     f = open("output.txt", "w")
     f.write("Documentation of A* Algorithm\n"
             "Used Heuristic: Hamming\n\n")
     f.close()
     for x in range(0, runs):
-        puzzle = Puzzle(create_goal(), 1)
+        puzzle = Puzzle(1)
         f = open("output.txt", "a")
         f.write("Run: " + str(x+1))
         f.close()
@@ -21,13 +28,21 @@ def hamming(runs):
 
 
 def manhattan(runs):
+    """
+        Starts the puzzle solving algorithm using the manhattan heuristic.
+        Also makes a file called output and writes the number of runs as well as 
+        the total time needed.
+
+        :param runs: Number of runs the system should do
+        :return: None
+        """
     time = 0
     f = open("output.txt", "w")
     f.write("Documentation of A* Algorithm\n"
             "Used Heuristic: Manhattan\n\n")
     f.close()
     for x in range(0, runs):
-        puzzle = Puzzle(create_goal(), 2)
+        puzzle = Puzzle(2)
         f = open("output.txt", "a")
         f.write("Run: " + str(x + 1))
         f.close()
@@ -35,13 +50,6 @@ def manhattan(runs):
     f = open("output.txt", "a")
     f.write("Total time: " + str(time))
     f.close()
-
-
-def create_goal():
-    goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
-    goal_state = np.array(goal_state)
-    goal_state = goal_state.reshape((3, 3))
-    return goal_state
 
 
 if __name__ == '__main__':

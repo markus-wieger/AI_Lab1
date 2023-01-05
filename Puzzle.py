@@ -5,6 +5,21 @@ import time
 from State import State
 
 
+def create_goal():
+    """
+    Creates the goal state for the 8 Puzzle.
+    [[1, 2, 3]
+     [4, 5, 6]
+     [7, 8, 0]]
+
+    :return: A 3x3 numpy array consisting of the goal state
+    """
+    goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+    goal_state = np.array(goal_state)
+    goal_state = goal_state.reshape((3, 3))
+    return goal_state
+
+
 def check_if_solvable(list_check):
     """
     Helper function for create_gameboard().
@@ -25,11 +40,12 @@ def check_if_solvable(list_check):
         return False
 
 
-def create_gameboard():
+def create_init_state():
     """
-    creates a suitable gameboard
+    creates a suitable start state for the 8-puzzle.
+    Randomizes a list and checks if it is solvable.
 
-    :return:
+    :return: A numpy 3x3 array containing a rondomized solvable state
     """
     tmp_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     solvable = False
@@ -38,10 +54,10 @@ def create_gameboard():
         # print(tmp_list)
 
         if check_if_solvable(tmp_list):
-            print("Solvable")
+            # print("Solvable")
             solvable = True
         else:
-            print("Not solvable!")
+            # print("Not solvable!")
             solvable = False
 
     res = np.array(tmp_list)
@@ -53,12 +69,20 @@ def create_gameboard():
 
 class Puzzle:
 
-    def __init__(self, goal, heuristic):
-        self.used_heuristic = heuristic  # 1 == Hamming; 2 == Manhattan
-        self.initial = create_gameboard()
+    def __init__(self, heuristic):
+        """
+        Constructor for Class Puzzle.
+        Creates new object with a ready to use goal and initial state.
+        Also adds initial state to heap.
+        Only heuristic in use is needed
+
+        :param heuristic: int: 1 for Hamming; 2 for Mannhattan
+        """
+        self.used_heuristic = heuristic             # 1 == Hamming; 2 == Manhattan
+        self.initial = create_init_state()
         self.g_val = 0
-        self.num_of_states = 0
-        self.goal = goal
+        self.num_of_states = 0                      # Number of total states added to the heap
+        self.goal = create_goal()
         self.states_pq = []
         init_state = State(self.initial, 0, self.goal, self.used_heuristic)
         heapq.heappush(self.states_pq, (init_state.f_val, self.num_of_states, init_state))
@@ -66,10 +90,14 @@ class Puzzle:
         # self.states = []
         # self.states.append(State(self.initial, 0, self.goal))
 
-    def printIndex(self):
-        return self.states_pq[0].getIndexOfTile(0)
-
     def solve(self):
+        """
+        Starts the solving process. Starts the "timer".
+        Writes all interesting info into output file.
+        Only stops when puzzle is solved.
+
+        :return: float: 2 decimal points. Time taken for puzzle solving
+        """
         start = time.time()
         while not self.check_if_solved((self.states_pq[0])[2]):
             self.where_to_go()
@@ -92,12 +120,20 @@ class Puzzle:
         return round(end-start, 2)
 
     def where_to_go(self):
+        """
+        Core of the puzzle solving. Decides where the next states can be.
+        Automatically adds those states to the heap.
+        Does not check if the state has already been looked at.
+        Idea is that if the state has already been visited the f_val will not be better than the new state.
+
+        :return: None
+        """
         out = heapq.heappop(self.states_pq)
         # print(out)
         state = out[2]
         self.g_val = state.g_val
         self.g_val += 1
-        index = state.getIndexOfTile(0)
+        index = state.getIndexOf0()
 
         if index[0] == 0:
             if index[1] == 0:
@@ -141,7 +177,6 @@ class Puzzle:
         Adds a state to the heap of Puzzle object
 
         :param state: State to be added to the heap
-        :return: none
         """
         self.num_of_states += 1
         heapq.heappush(self.states_pq, (state.f_val, self.num_of_states, state))
@@ -165,6 +200,12 @@ class Puzzle:
         return State(new, self.g_val, self.goal, self.used_heuristic)
 
     def check_if_solved(self, state):
+        """
+        Compares given state with goal state of puzzle returns true if equal else false
+
+        :param state: State that needs to be compared
+        :return: boolean: true or false depending on equality
+        """
         if np.array_equal(state.current, self.goal):
             return True
         else:
