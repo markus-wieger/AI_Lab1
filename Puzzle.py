@@ -52,20 +52,21 @@ def create_gameboard():
 
 class Puzzle:
 
-    def __init__(self, goal):
+    def __init__(self, goal, heuristic):
+        self.used_heuristic = heuristic  # 1 == Hamming; 2 == Manhattan
         self.initial = create_gameboard()
         self.g_val = 0
         self.num_of_states = 0
         self.goal = goal
         self.states_pq = []
-        init_state = State(self.initial, 0, self.goal)
+        init_state = State(self.initial, 0, self.goal, self.used_heuristic)
         heapq.heappush(self.states_pq, (init_state.f_val, self.num_of_states, init_state))
 
         # self.states = []
         # self.states.append(State(self.initial, 0, self.goal))
 
     def printIndex(self):
-        return State(self.initial, 0, self.goal).getIndexOf0()
+        return self.states_pq[0].getIndexOfTile(0)
 
     def solve(self):
         while not self.check_if_solved((self.states_pq[0])[2]):
@@ -80,7 +81,7 @@ class Puzzle:
         state = out[2]
         self.g_val = state.g_val
         self.g_val += 1
-        index = state.getIndexOf0()
+        index = state.getIndexOfTile(0)
 
         if index[0] == 0:
             if index[1] == 0:
@@ -145,7 +146,7 @@ class Puzzle:
         new = np.copy(state.current)
         new[zeile][spalte] = old[alt_zeile][alt_spalte]
         new[alt_zeile][alt_spalte] = old[zeile][spalte]
-        return State(new, self.g_val, self.goal)
+        return State(new, self.g_val, self.goal, self.used_heuristic)
 
     def check_if_solved(self, state):
         if np.array_equal(state.current, self.goal):
