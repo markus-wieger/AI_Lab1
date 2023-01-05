@@ -19,7 +19,7 @@ def hamming(runs):
     for x in range(0, runs):
         puzzle = Puzzle(1)
         f = open("output.txt", "a")
-        f.write("Run: " + str(x+1))
+        f.write("\nRun: " + str(x+1))
         f.close()
         puzzle.solve()
     f = open("output.txt", "a")
@@ -44,7 +44,7 @@ def manhattan(runs):
     for x in range(0, runs):
         puzzle = Puzzle(2)
         f = open("output.txt", "a")
-        f.write("Run: " + str(x + 1))
+        f.write("\nRun: " + str(x + 1))
         f.close()
         time += puzzle.solve()
     f = open("output.txt", "a")
